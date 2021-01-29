@@ -1,37 +1,87 @@
-## Welcome to GitHub Pages
+# lambdarest
 
-You can use the [editor on GitHub](https://github.com/sloev/python-lambdarest/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+[![Build Status](https://travis-ci.com/sloev/python-lambdarest.svg?branch=master)](https://travis-ci.com/github/sloev/python-lambdarest) [![Latest Version](https://img.shields.io/pypi/v/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![PyPI - Downloads](https://img.shields.io/pypi/dm/lambdarest?label=pypi%20downloads)](https://pypistats.org/packages/lambdarest) [![Python Support](https://img.shields.io/pypi/pyversions/lambdarest.svg)](https://pypi.python.org/pypi/lambdarest) [![Examples tested with pytest-readme](http://img.shields.io/badge/readme-tested-brightgreen.svg)](https://github.com/boxed/pytest-readme) [![Buy me a coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-green.svg)](https://buymeacoffee.com/sloev)
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Python routing mini-framework for [AWS Lambda](https://aws.amazon.com/lambda/) with optional JSON-schema validation.
 
-### Markdown
+### Features
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+* `lambda_handler` function constructor with built-in dispatcher
+* Decorator to register functions to handle HTTP methods
+* Optional JSON-schema input validation using same decorator
 
-```markdown
-Syntax highlighted code block
+### External articles / tutorials
 
-# Header 1
-## Header 2
-### Header 3
+* [devgrok.com: Create a Private Microservice Using an Application Load Balancer](http://www.devgrok.com/2019/03/create-private-microservice-using.html)
 
-- Bulleted
-- List
+  Article about how to use **lambdarest** with **AWS Application Load Balancer**
 
-1. Numbered
-2. List
+* [rockset.com: Building a Serverless Microservice Using Rockset and AWS Lambda](https://rockset.com/blog/building-a-serverless-microservice-using-rockset-and-aws-lambda/)
 
-**Bold** and _Italic_ and `Code` text
+  Article about how to set up **lambdarest** in AWS infrastructure
 
-[Link](url) and ![Image](src)
+**Other articles? add them [here](https://github.com/trustpilot/python-lambdarest/issues/55)**
+
+## Installation
+
+Install the package from [PyPI](http://pypi.python.org/pypi/) using [pip](https://pip.pypa.io/):
+
+```bash
+$ pip install lambdarest
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+## Getting Started
 
-### Jekyll Themes
+This module helps you to handle different HTTP methods in your AWS Lambda.
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/sloev/python-lambdarest/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+```python
+from lambdarest import lambda_handler
 
-### Support or Contact
+@lambda_handler.handle("get")
+def my_own_get(event):
+    return {"this": "will be json dumped"}
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+##### TEST #####
+
+input_event = {
+    "body": '{}',
+    "httpMethod": "GET",
+    "resource": "/"
+}
+result = lambda_handler(event=input_event)
+assert result == {"body": '{"this": "will be json dumped"}', "statusCode": 200, "headers":{}}
+```
+
+## Documentation
+
+See [docs](https://github.com/trustpilot/python-lambdarest/blob/master/docs/README.md) for **documentation and examples** covering amongst:
+
+* [Advanced usage example](https://github.com/trustpilot/python-lambdarest/blob/master/docs/README.md#advanced-usage)
+* [Query params](https://github.com/trustpilot/python-lambdarest/blob/master/docs/README.md#query-params)
+* [Headers and MultiValueHeaders](https://github.com/trustpilot/python-lambdarest/blob/master/docs/README.md#headers-and-multivalueheaders)
+* [Routing](https://github.com/trustpilot/python-lambdarest/blob/master/docs/README.md#routing)
+* [Authorization Scopes](https://github.com/trustpilot/python-lambdarest/blob/master/docs/README.md#authorization-scopes)
+* [Exception Handling](https://github.com/trustpilot/python-lambdarest/blob/master/docs/README.md#exception-handling)
+* [AWS Application Load Balancer](https://github.com/trustpilot/python-lambdarest/blob/master/docs/README.md#aws-application-load-balancer)
+
+
+## Anormal unittest behaviour with `lambda_handler` singleton
+
+Because of python unittests leaky test-cases it seems like you shall beware of [this issue](https://github.com/trustpilot/python-lambdarest/issues/16) when using the singleton `lambda_handler` in a multiple test-case scenario.
+
+## Tests
+
+This package uses [Poetry](https://python-poetry.org/docs/) to install requirements and run tests.
+
+Use the following commands to install requirements and run test-suite:
+
+```bash
+$ poetry install
+$ poetry run task test
+```
+
+For more info see [Contributing...](https://github.com/trustpilot/python-lambdarest/blob/master/docs/CONTRIBUTING.md)
+
+## Changelog
+
+See [HISTORY.md](https://github.com/trustpilot/python-lambdarest/blob/master/docs/HISTORY.md)
